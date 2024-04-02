@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   getAuth,
   GoogleAuthProvider,
@@ -23,6 +23,7 @@ const Login: React.FC = () => {
   const [message, setMessage] = useState("");
   const [user, setUser] = useState<User | null>(null);
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const emailRef = useRef<HTMLInputElement>(null);
 
   const handleGoogleSignIn = () => {
     signInWithPopup(auth, GoogleProvider)
@@ -86,6 +87,13 @@ const Login: React.FC = () => {
     setPasswordVisible(!passwordVisible);
   };
 
+  const handleForgetPassword = () => {
+    if (!emailRef.current?.value) {
+      setMessage("Provide your Email First");
+    }
+    console.log(emailRef.current?.value);
+  };
+
   return (
     <div>
       {user ? (
@@ -135,6 +143,7 @@ const Login: React.FC = () => {
                   className="input input-bordered"
                   required
                   name="email"
+                  ref={emailRef}
                 />
               </div>
               <div className="form-control">
@@ -158,7 +167,11 @@ const Login: React.FC = () => {
                   </button>
                 </div>
                 <label className="label">
-                  <a href="#" className="label-text-alt link link-hover">
+                  <a
+                    href="#"
+                    onClick={handleForgetPassword}
+                    className="label-text-alt link link-hover"
+                  >
                     Forgot password?
                   </a>
                 </label>

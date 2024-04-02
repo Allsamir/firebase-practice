@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 const Register: React.FC = () => {
   const auth = getAuth(app);
   const [message, setMessage] = useState("");
+
   const [passwordVisible, setPasswordVisible] = useState(false);
   const handleTogglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -109,7 +110,7 @@ const Register: React.FC = () => {
                 </label>
               </div>
               <div className="form-control mt-6">
-                <button className="btn btn-primary">Login</button>
+                <button className="btn btn-primary">Register</button>
               </div>
             </form>
             {message && (
