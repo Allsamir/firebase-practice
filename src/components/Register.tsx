@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  updateProfile,
+} from "firebase/auth";
 import app from "../firebase/firebase.init";
 import { Link } from "react-router-dom";
 
@@ -15,12 +20,16 @@ const Register: React.FC = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const email = e.currentTarget.email.value;
+    const name = e.currentTarget.name.value;
     const password = e.currentTarget.password.value;
     const terms = e.currentTarget.terms.checked;
-    console.log(terms);
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/.test(password)) {
+    if (
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,}$/.test(
+        password
+      )
+    ) {
       setMessage(
-        "Your password should contain a-Z&0-9 and more than 8 character"
+        "Your password should contain one Uppercase & Lowercase and any symbol and more than 8 character"
       );
       return;
     } else if (!terms) {
@@ -30,9 +39,21 @@ const Register: React.FC = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        console.log(user);
-        setMessage("Successfully Registerd");
+
+        updateProfile(user, {
+          displayName: name,
+        })
+          .then((result) => {
+            setMessage("Successfully Registered");
+            console.log(result);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+
         (e.target as HTMLFormElement).reset();
+        sendEmailVerification(user);
+        user.emailVerified || setMessage("Please Verify your email");
       })
       .catch((error) => {
         console.error(error);
@@ -58,6 +79,18 @@ const Register: React.FC = () => {
           </div>
           <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
             <form className="card-body" onSubmit={handleSubmit}>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Your Name</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Your Name"
+                  className="input input-bordered"
+                  name="name"
+                  required
+                />
+              </div>
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Email</span>
@@ -118,6 +151,8 @@ const Register: React.FC = () => {
                 className={`py-4 ${
                   message.includes("Successfully")
                     ? "text-green-400"
+                    : message.includes("Verify")
+                    ? "text-yellow-400"
                     : "text-red-600"
                 }`}
               >

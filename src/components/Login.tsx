@@ -6,6 +6,7 @@ import {
   signOut,
   GithubAuthProvider,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import app from "../firebase/firebase.init";
 import { Link } from "react-router-dom";
@@ -74,7 +75,10 @@ const Login: React.FC = () => {
         // Signed in
         const user = userCredential.user;
         console.log(user);
-        setMessage("Login Successfully");
+        (e.target as HTMLFormElement).reset();
+        user.emailVerified
+          ? setMessage("Successfully verified and Login")
+          : setMessage("Please Verify your email");
         // ...
       })
       .catch((error) => {
@@ -90,8 +94,24 @@ const Login: React.FC = () => {
   const handleForgetPassword = () => {
     if (!emailRef.current?.value) {
       setMessage("Provide your Email First");
+      return;
+    } else if (
+      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+        emailRef.current.value
+      )
+    ) {
+      setMessage("Provide a valid email");
+      return;
     }
-    console.log(emailRef.current?.value);
+
+    sendPasswordResetEmail(auth, emailRef.current.value)
+      .then((result) => {
+        setMessage("Successfully a password reset email sent!");
+        console.log(result);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   return (
