@@ -1,1 +1,1 @@
-# React + TypeScript + Vite + Firebase Auth
+# React + TypeScript + Vite + Firebase Auth + Dynamic page title

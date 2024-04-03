@@ -1,7 +1,18 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import "./App.css";
+import { useEffect } from "react";
 
 function App() {
+  const location = useLocation();
+  useEffect(() => {
+    if (location.pathname === "/") {
+      location.pathname = ``;
+    }
+    const path = location.pathname.replace("/", "-");
+    const capitalizedRoute =
+      path.slice(0, 1) + path.charAt(1).toUpperCase() + path.slice(2);
+    document.title = `Firebase${capitalizedRoute}`;
+  }, [location]);
   return (
     <>
       <div style={{ display: "flex", justifyContent: "end" }}>
